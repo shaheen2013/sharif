@@ -9,15 +9,10 @@ use App\todolist;
 class TodolistController extends Controller
 {
     public function todos(){
-
-        // $todos = todolist::all();
         $todos = todolist::orderBy('id','desc')->get();
-
         return response()->json($todos);
     }
     public function todo_create(Request $req){
-        // todolist::created($req);
-        // echo $req->input('task');
         $todo = todolist::create([
             'task'=>$req->input('task'),
         ]);
@@ -39,4 +34,5 @@ class TodolistController extends Controller
         $todo->save();
         return response()->json("updated");
     }
+
 }

@@ -44,3 +44,4 @@ class PassportController extends Controller
         return redirect('login');
     }
 }
+
