@@ -26,7 +26,7 @@
 import Modal from './Modal.vue'
 import axios from 'axios'
 export default {
-    name:'mainview',
+    name:'Mainview',
     components:{
         Modal
     },

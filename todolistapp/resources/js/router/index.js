@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import mainview from '../Master.vue'
-import LoginView from '../pages/Auth/Login.vue'
-import RegisterView from '../pages/Auth/Register.vue'
+import Mainview from '../pages/todolist/Master.vue'
+import LoginView from '../pages/auth/Login.vue'
+import RegisterView from '../pages/auth/Register.vue'
 import CountryCity from "../pages/country-city/CountryCity";
 
 Vue.use(VueRouter)
@@ -17,7 +17,7 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: LoginView
-    },
+},
     {
       path: '/register',
       name: 'Register',
