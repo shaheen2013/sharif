@@ -1,8 +1,11 @@
 <template>
     <div class="container mt-5">
-        <div>
+        <div class="d-flex justify-content-between">
+            <router-link to="/country-city" class="btn btn-success ml-3"> Go to Country-City </router-link>
+            <button @click="logout" class="btn btn-danger ml-3"> Logout </button>
+        </div>
+        <div class="mt-2">
             <input v-on:keyup = "search_task" v-model= "search_text" name='search' type="text" placeholder="Search task">
-            <button class="btn btn-success ml-3"> Search </button>
         </div>
         <div class="justify-content-between mt-2">
             <h5 class="display-5">Todo list app</h5>
@@ -12,24 +15,17 @@
         <div class="card mt-2" v-for="todo in todos" :key="todo.id">
             <div class="card-body justify-content-between">
                 <p>{{todo.task}} </p>
-                <button v-on:click = "edit_task_helper(todo.id,todo.task)" class="btn btn-secondary m-2" :id="todo.id" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo"> Edit</button>
-                <button v-on:click = "modal_show(todo.id,todo.task)" class="btn btn-danger" :id="todo.id" data-toggle="modal" data-target="#exampleModal"> Delete</button>
+                <button v-on:click = "edit_task(todo.id,todo.task)" class="btn btn-secondary m-2" :id="todo.id" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo"> Edit</button>
+                <button v-on:click = "delete_task(todo.id,todo.task)" class="btn btn-danger" :id="todo.id" data-toggle="modal" data-target="#exampleModal"> Delete</button>
             </div>
-        </div>
-        <div id="modal">
-           <Modal :isEdit= "isEdit" :task= "task" :todo= "todo" @delete_task = 'delete_task' @edit_task= "edit_task" />
         </div>
     </div>
 </template>
 
 <script>
-import Modal from './Modal.vue'
-import axios from 'axios'
+import NotificationService from '../../service/notification.service'
 export default {
     name:'Mainview',
-    components:{
-        Modal
-    },
     data(){
         return{
             todos: [],
@@ -45,36 +41,44 @@ export default {
     },
 
     methods:{
-        async delete_task(){
-            let btn = document.querySelector('#delete-id')
-            let task_id = parseInt(btn.value)
-            await axios.get('todo/'+task_id)
-            .then()
-            await this.getValue()
+        async delete_task(id,task){
+            Swal.fire({
+                title: `Do you want to delete ${task}?`,
+                showDenyButton: true,
+                confirmButtonText: `Delete`,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $with_bearer_token.get('todo/'+id)
+                    .then(
+                        NotificationService.success("Successfully Delete task")
+                    )
+                    this.getValue()
+                    Swal.fire('Deleted!', '', 'success')
+                }
+            })
         },
         save_todo:function(){
             if(this.task_text.length>0){
                 const todo = {task:this.task_text}
-
-                let url = 'http://localhost:8000/create-todo'
-                axios.post(url,todo)
+                let url = '/create-todo'
+                $with_bearer_token.post(url,todo)
                 .then(
                     res=> {
                         this.todos.unshift(res.data)
-                        console.log(res.data)
+                        NotificationService.success('Task has been saved')
                     }
                 )
                 this.task_text = ""
                 this.search_text = ""
             }else{
-                alert('Insert at least on letter')
+                NotificationService.task_add_warning("Please add task.")
             }
         },
         search_task:function(){
             if(this.search_text.length==0) this.getValue()
             else{
-                let url = 'http://localhost:8000/search/'+this.search_text;
-                axios.get(url)
+                let url = '/search/'+this.search_text;
+                $with_bearer_token.get(url)
                 .then(res=>this.todos=res.data)
             }
         },
@@ -82,38 +86,55 @@ export default {
         async toggleButton(val){
             this.isEdit = val
         },
-
-        async edit_task_helper(task_id,task){
-            await this.toggleButton(true)
-            var btn = document.querySelector('#edit-id')
-            btn.value = task_id
-            this.task = task
-        },
-        async edit_task(){
-            var id = document.querySelector('#edit-id').value
-            var task = document.querySelector('#edit_input').value
-            let todo = {
-                id:id,
-                task:task
-            }
-            let url = 'http://localhost:8000/update/'+id
-            await axios.put(url,todo)
-            .then(res=>console.log(res.data))
-            await this.getValue()
-        },
-        async getValue(){
-            let url = 'http://localhost:8000/todos'
-            axios.get(url)
-            .then(res => {
-                this.todos = res.data
-                console.log(res.data)
+        async edit_task(id,task){
+            await Swal.fire({
+                title: 'Edit Task',
+                input: 'text',
+                inputLabel: `Do you want to edit ${task}`,
+                inputValue: task,
+                showCancelButton: true,
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'You need to write something!'
+                    }else{
+                        let url = '/update/'+id
+                        let todo = {
+                                id:id,
+                                task:value
+                            }
+                        $with_bearer_token.put(url,todo)
+                        .then(
+                            NotificationService.success("Successfully edit task")
+                        )
+                        this.getValue()
+                    }
+                }
             })
         },
-        async modal_show(task_id,todo){
-            await this.toggleButton(false)
-            var btn = document.querySelector('#delete-id')
-            btn.value = task_id
-            this.todo = todo
+        async getValue(){
+            let url = '/todos'
+            $with_bearer_token.get(url)
+            .then(res => {
+                this.todos = res.data
+            })
+        },
+        logout(){
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to logout?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    NotificationService.success('Logout')
+                    localStorage.removeItem('accessToken');
+                    this.$router.push('/login')
+                }
+            })
+
         }
     },
 

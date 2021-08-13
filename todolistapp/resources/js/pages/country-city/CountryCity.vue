@@ -2,7 +2,7 @@
    <div class="container mt-5">
        <div class="card">
            <div class="card-header">
-               Country-City
+               Country-City<span><router-link class="btn btn-warning ml-2" to="/">Back to Todolist</router-link></span>
            </div>
            <div class="card-body">
                <table class="table table-bordered">
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+
 export  default {
     name:'CountryCity',
     data(){
@@ -37,9 +37,8 @@ export  default {
     },
     mounted() {
         let url = '/country-city-list'
-        axios.get(url).
+        $with_bearer_token.get(url).
         then(res=>{
-            console.log(res.data)
             this.countries = res.data
         }).
         catch(error=>console.log(error.message))

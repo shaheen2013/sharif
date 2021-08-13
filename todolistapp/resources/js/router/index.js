@@ -9,15 +9,19 @@ Vue.use(VueRouter)
 
 const routes = [
     {
-    path: '/',
-    name: 'Home',
-    component: mainview
+        path: '/',
+        name: 'Home',
+        component: Mainview,
+        meta: {
+            title: 'Home',
+            requireAuth:true
+        }
     },
     {
     path: '/login',
     name: 'Login',
     component: LoginView
-},
+    },
     {
       path: '/register',
       name: 'Register',
@@ -26,16 +30,23 @@ const routes = [
     {
         path: '/country-city',
         name: 'CountryCity',
-        component: CountryCity
+        component: CountryCity,
+        meta: {
+            title: 'Country-city',
+            requireAuth:true
+        }
+
     },
-
-
-
 ]
 
 const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+  // mode: 'history',
+  // base: process.env.BASE_URL,
+    mode: 'history',
+    base: '/',
+    scrollBehavior() {
+        return {x: 0, y: 0}
+    },
   routes
 })
 

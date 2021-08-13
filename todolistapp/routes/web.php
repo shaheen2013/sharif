@@ -12,12 +12,11 @@ Route::middleware(['auth:api'])->group(function (){
     Route::put('/update/{id}','TodolistController@update');
     Route::post('/create-todo','TodolistController@todo_create');
     Route::get('/country-city-list','CountryCityController@index');
-    Route::get('/logout','auth\PassportController@logout');
-    Route::get('/', function () {
-        return view('app');
-    });
 });
-
+Route::get('/', function () {
+    return view('app');
+});
+Route::get('/profile','auth\PassportController@profile');
 Route::post('/login','auth\PassportController@login')->name('login');
 Route::post('/register','auth\PassportController@register');
 
