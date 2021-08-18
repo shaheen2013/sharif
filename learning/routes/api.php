@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::get('/articles',[\App\Http\Controllers\ArticleController::class,'index']);
-Route::get('/article/{id}',[\App\Http\Controllers\ArticleController::class,'show']);
+Route::get('/articles/{id}',[\App\Http\Controllers\ArticleController::class,'show']);
 Route::post('/articles',[\App\Http\Controllers\ArticleController::class,'store']);
 Route::delete('/articles/{id}',[\App\Http\Controllers\ArticleController::class,'destroy']);
 Route::put('/articles/{id}',[\App\Http\Controllers\ArticleController::class,'update']);

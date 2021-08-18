@@ -9,6 +9,15 @@ class Article extends Model
 {
     use HasFactory;
 
+    public function getTitleAttribute($value)
+    {
+        return "$value";
+    }
+
+    public function setTitleAttribute($value)
+    {
+        $this->attributes['title'] = strtolower($value);
+    }
 
     public function comments()
     {

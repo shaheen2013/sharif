@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http;
-
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -21,6 +20,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+//        \App\Http\Middleware\AgeCheck::class, for global use
     ];
 
     /**
@@ -37,11 +37,13 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+//            \App\Http\Middleware\AgeCheck::class, if want to use for web
         ],
 
         'api' => [
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+//            \App\Http\Middleware\AgeCheck::class, If want to use for api
         ],
     ];
 
